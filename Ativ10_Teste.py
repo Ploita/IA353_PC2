@@ -285,8 +285,8 @@ class Experience(object):
             del self.memory[0]
 
     def predict(self, envstate):
-        return self.model.predict(envstate)[0]
-
+        return self.model.predict(envstate, verbose=0)[0]
+    
     def get_data(self, data_size=10):
         env_size = self.memory[0][0].shape[1]   # envstate 1d size (1st element of episode)
         mem_size = len(self.memory)
@@ -346,6 +346,7 @@ def qtrain(model, maze, **opt):
 
         n_episodes = 0
         while not game_over:
+            print(epoch, n_episodes)
             valid_actions = qmaze.valid_actions()
             if not valid_actions: break
             prev_envstate = envstate
@@ -373,7 +374,7 @@ def qtrain(model, maze, **opt):
 
             # Train neural network model
             inputs, targets = experience.get_data(data_size=data_size)
-            h = model.fit(
+            model.fit(
                 inputs,
                 targets,
                 epochs=8,
@@ -452,7 +453,7 @@ show(qmaze)
 
 # %%
 model = build_model(maze)
-qtrain(model, maze, epochs=1, max_memory=8*maze.size, data_size=32)
+qtrain(model, maze, n_epoch=1, max_memory=8*maze.size, data_size=32)
 
 # %% [markdown]
 # **Trajectory generated from a random point with the trained network**
